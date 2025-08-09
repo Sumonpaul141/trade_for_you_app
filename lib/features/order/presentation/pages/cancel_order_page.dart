@@ -6,6 +6,7 @@ import 'package:trade_for_you_app/common/app_toaster.dart';
 import 'package:trade_for_you_app/common/app_ui_const.dart';
 import 'package:trade_for_you_app/common/enums.dart';
 import 'package:trade_for_you_app/common/widgets/basic_app_bar.dart';
+import 'package:trade_for_you_app/common/widgets/text_button.dart';
 import 'package:trade_for_you_app/features/order/data/models/cancel_response_model.dart';
 import 'package:trade_for_you_app/features/order/presentation/blocs/cancel_order_cubit/cancel_order_cubit.dart';
 import 'package:trade_for_you_app/features/order/presentation/blocs/pair_cubit/pair_cubit.dart';
@@ -107,24 +108,10 @@ class _CancelOrderPageState extends State<CancelOrderPage> {
   }
 
   _buildCancelOrderButton({required VoidCallback onTap}) {
-    return GestureDetector(
+    return RoundedButton(
+      text: AppStrings.cancelOrder,
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: AppUiConst.mp12),
-        decoration: BoxDecoration(
-          color: AppColors.red.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(AppUiConst.borderRadius10),
-        ),
-        child: Center(
-          child: Text(
-            AppStrings.cancelOrder,
-            style: AppUiConst.font12RegularTS.copyWith(
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-      ),
+      color: AppColors.red,
     );
   }
 

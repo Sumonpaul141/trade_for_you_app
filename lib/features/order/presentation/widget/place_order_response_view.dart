@@ -62,7 +62,12 @@ class PlaceOrderResponseView extends StatelessWidget {
                   ),
                 ),
                 subtitle: Text(
-                  result.message.split("-").map((x) => x.trim()).join("\n"),
+                  result.success
+                      ? result.message
+                          .split("-")
+                          .map((x) => x.trim())
+                          .join("\n")
+                      : result.message,
                   style: AppUiConst.font12RegularTS.copyWith(
                     color:
                         result.success

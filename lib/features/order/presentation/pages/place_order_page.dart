@@ -6,6 +6,7 @@ import 'package:trade_for_you_app/common/app_ui_const.dart';
 import 'package:trade_for_you_app/common/enums.dart';
 import 'package:trade_for_you_app/common/extension.dart';
 import 'package:trade_for_you_app/common/widgets/basic_app_bar.dart';
+import 'package:trade_for_you_app/common/widgets/text_button.dart';
 import 'package:trade_for_you_app/features/order/data/models/order_response_model.dart';
 import 'package:trade_for_you_app/features/order/presentation/blocs/pair_cubit/pair_cubit.dart';
 import 'package:trade_for_you_app/features/order/presentation/blocs/place_order_cubit/place_order_cubit.dart';
@@ -135,11 +136,12 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
                   label: "Percent",
                   formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
                     builder: (context, state) {
-                      return _buildTextFormField(
-                        hintText: "50",
-                        onChanged: _placeOrderCubit.selectPercent,
-                        initialValue:
-                            state.placeOrderRequestEntity.percent.toString(),
+                      return _buildSlider(
+                        value: (state.placeOrderRequestEntity.percent ?? 0),
+                        onChanged:
+                            (val) => _placeOrderCubit.selectPercent(
+                              "${val.toInt()}",
+                            ),
                       );
                     },
                   ),
@@ -206,6 +208,30 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSlider({required double value, Function(double)? onChanged}) {
+    return _buildInputContainer(
+      child: Row(
+        children: [
+          Expanded(
+            child: Slider(
+              value: value,
+              onChanged: onChanged,
+              min: 1,
+              max: 100,
+              divisions: 100,
+            ),
+          ),
+          Text(
+            "${value.toInt()}%",
+            style: AppUiConst.font12RegularTS.copyWith(
+              color: AppColors.textPrimary,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -298,24 +324,10 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
   }
 
   _buildPlaceOrderButton({required VoidCallback onTap}) {
-    return GestureDetector(
+    return RoundedButton(
+      text: AppStrings.placeOrder,
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: AppUiConst.mp12),
-        decoration: BoxDecoration(
-          color: AppColors.accent.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(AppUiConst.borderRadius10),
-        ),
-        child: Center(
-          child: Text(
-            AppStrings.placeOrder,
-            style: AppUiConst.font12RegularTS.copyWith(
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-      ),
+      color: AppColors.accent,
     );
   }
 

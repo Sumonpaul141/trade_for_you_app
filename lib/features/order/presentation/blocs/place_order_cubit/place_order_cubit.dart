@@ -11,10 +11,6 @@ class PlaceOrderCubit extends Cubit<PlaceOrderState> {
   final PlaceOrderUseCase _placeOrderUseCase;
   PlaceOrderCubit(this._placeOrderUseCase) : super(PlaceOrderState());
 
-  clearAll() {
-    emit(state.copyWith(placeOrderRequestEntity: PlaceOrderRequestEntity()));
-  }
-
   Future<void> selectPairId(int pairId) async {
     emit(
       state.copyWith(

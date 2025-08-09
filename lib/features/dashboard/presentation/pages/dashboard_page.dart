@@ -5,6 +5,7 @@ import 'package:trade_for_you_app/common/app_colors.dart';
 import 'package:trade_for_you_app/common/app_strings.dart';
 import 'package:trade_for_you_app/common/app_ui_const.dart';
 import 'package:trade_for_you_app/common/widgets/company_logo.dart';
+import 'package:trade_for_you_app/common/widgets/text_button.dart';
 import 'package:trade_for_you_app/core/router/app_router.dart';
 import 'package:trade_for_you_app/features/auth/data/models/user_model.dart';
 import 'package:trade_for_you_app/features/auth/presentation/blocs/auth_cubit/auth_cubit.dart';
@@ -116,46 +117,18 @@ class DashboardPage extends StatelessWidget {
   }
 
   _buildPlaceOrderButton({required VoidCallback onTap}) {
-    return GestureDetector(
+    return RoundedButton(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: AppUiConst.mp12),
-        decoration: BoxDecoration(
-          color: AppColors.accent.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(AppUiConst.borderRadius10),
-        ),
-        child: Center(
-          child: Text(
-            AppStrings.placeOrder,
-            style: AppUiConst.font12RegularTS.copyWith(
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-      ),
+      text: AppStrings.placeOrder,
+      color: AppColors.accent,
     );
   }
 
   _buildCancelOrderButton({required VoidCallback onTap}) {
-    return GestureDetector(
+    return RoundedButton(
       onTap: onTap,
-      behavior: HitTestBehavior.opaque,
-      child: Container(
-        padding: EdgeInsets.symmetric(vertical: AppUiConst.mp12),
-        decoration: BoxDecoration(
-          color: AppColors.red.withValues(alpha: 0.5),
-          borderRadius: BorderRadius.circular(AppUiConst.borderRadius10),
-        ),
-        child: Center(
-          child: Text(
-            AppStrings.cancelOrder,
-            style: AppUiConst.font12RegularTS.copyWith(
-              color: AppColors.textPrimary,
-            ),
-          ),
-        ),
-      ),
+      text: AppStrings.cancelOrder,
+      color: AppColors.red,
     );
   }
 }
