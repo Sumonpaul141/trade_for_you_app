@@ -1,12 +1,12 @@
 import 'package:trade_for_you_app/features/order/data/models/pair_model.dart';
-import 'package:trade_for_you_app/features/order/domain/repositories/order_repository.dart';
+import 'package:trade_for_you_app/features/order/domain/repositories/trade_repository.dart';
 
 class GetPairUseCases {
-  final OrderRepository orderRepository;
+  final TradeRepository tradeRepository;
 
-  GetPairUseCases(this.orderRepository);
+  GetPairUseCases(this.tradeRepository);
 
   Future<List<PairModel>> call() {
-    return orderRepository.getPairs();
+    return tradeRepository.getPairs();
   }
 }

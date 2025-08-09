@@ -54,4 +54,17 @@ class PlaceOrderRequestEntity extends Equatable {
     stopLoss,
     username,
   ];
+
+  Map<String, dynamic> toMap() {
+    return {
+      'pairId': this.pairId,
+      'side': this.side,
+      'unitType': this.unitType,
+      'leverage': this.leverage,
+      'percent': this.percent,
+      'takeProfit': this.takeProfit,
+      'stopLoss': this.stopLoss,
+      'username': this.username,
+    };
+  }
 }

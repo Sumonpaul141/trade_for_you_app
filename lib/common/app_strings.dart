@@ -11,4 +11,8 @@ class AppStrings {
   static const String joined = "Joined";
   static const String placeOrder = "Place order";
   static const String cancelOrder = "Cancel order";
+  static const String orderId = "Order Id";
+  static const String slTP = "SL/TP";
+  static const String position = "Position";
+  static const String errors = "Errors";
 }

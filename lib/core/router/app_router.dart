@@ -43,7 +43,7 @@ class AppRouter {
             name: placeOrderRoute,
             builder: (context, state) {
               return BlocProvider(
-                create: (context) => PlaceOrderCubit(),
+                create: (context) => PlaceOrderCubit(sl()),
                 child: PlaceOrderPage(),
               );
             },
@@ -53,7 +53,7 @@ class AppRouter {
             name: cancelOrderRoute,
             builder: (context, state) {
               return BlocProvider(
-                create: (context) => CancelOrderCubit(),
+                create: (context) => CancelOrderCubit(sl()),
                 child: CancelOrderPage(),
               );
             },

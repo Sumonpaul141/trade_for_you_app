@@ -6,8 +6,10 @@ import 'package:trade_for_you_app/common/app_toaster.dart';
 import 'package:trade_for_you_app/common/app_ui_const.dart';
 import 'package:trade_for_you_app/common/enums.dart';
 import 'package:trade_for_you_app/common/widgets/basic_app_bar.dart';
+import 'package:trade_for_you_app/features/order/data/models/cancel_response_model.dart';
 import 'package:trade_for_you_app/features/order/presentation/blocs/cancel_order_cubit/cancel_order_cubit.dart';
 import 'package:trade_for_you_app/features/order/presentation/blocs/pair_cubit/pair_cubit.dart';
+import 'package:trade_for_you_app/features/order/presentation/widget/cancel_order_response_view.dart';
 
 class CancelOrderPage extends StatefulWidget {
   const CancelOrderPage({super.key});
@@ -34,6 +36,9 @@ class _CancelOrderPageState extends State<CancelOrderPage> {
       listener: (context, state) {
         if (state.cancelOrderEventCallResult == EventCallResult.error) {
           AppToaster.showInfo(context, state.errorText);
+        }
+        if (state.cancelOrderEventCallResult == EventCallResult.success) {
+          _showSuccessList(context, state.cancelResponseModel);
         }
       },
       child: Scaffold(
@@ -78,7 +83,21 @@ class _CancelOrderPageState extends State<CancelOrderPage> {
                   },
                 ),
                 SizedBox(height: AppUiConst.mp12),
-                _buildCancelOrderButton(onTap: _cancelOrderCubit.cancelOrder),
+                BlocBuilder<CancelOrderCubit, CancelOrderState>(
+                  buildWhen:
+                      (p, c) =>
+                          p.cancelOrderEventCallResult !=
+                          c.cancelOrderEventCallResult,
+                  builder: (context, state) {
+                    if (state.cancelOrderEventCallResult ==
+                        EventCallResult.loading) {
+                      return LinearProgressIndicator();
+                    }
+                    return _buildCancelOrderButton(
+                      onTap: _cancelOrderCubit.cancelOrder,
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -168,6 +187,21 @@ class _CancelOrderPageState extends State<CancelOrderPage> {
         SizedBox(height: AppUiConst.mp8),
         formField,
       ],
+    );
+  }
+
+  Future _showSuccessList(
+    BuildContext context,
+    List<CancelResponseModel> cancelResponseModel,
+  ) async {
+    return await showModalBottomSheet(
+      context: context,
+      enableDrag: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (builder) {
+        return CancelOrderResponseView(results: cancelResponseModel);
+      },
     );
   }
 }

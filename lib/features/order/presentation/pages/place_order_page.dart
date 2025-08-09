@@ -6,8 +6,10 @@ import 'package:trade_for_you_app/common/app_ui_const.dart';
 import 'package:trade_for_you_app/common/enums.dart';
 import 'package:trade_for_you_app/common/extension.dart';
 import 'package:trade_for_you_app/common/widgets/basic_app_bar.dart';
+import 'package:trade_for_you_app/features/order/data/models/order_response_model.dart';
 import 'package:trade_for_you_app/features/order/presentation/blocs/pair_cubit/pair_cubit.dart';
 import 'package:trade_for_you_app/features/order/presentation/blocs/place_order_cubit/place_order_cubit.dart';
+import 'package:trade_for_you_app/features/order/presentation/widget/place_order_response_view.dart';
 
 class PlaceOrderPage extends StatefulWidget {
   const PlaceOrderPage({super.key});
@@ -30,158 +32,178 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: BasicAppBar(),
-      body: Container(
-        margin: EdgeInsets.all(AppUiConst.mp16),
-        padding: EdgeInsets.all(AppUiConst.mp12),
-        decoration: BoxDecoration(color: AppColors.cardBackground),
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                AppStrings.placeOrder,
-                style: AppUiConst.font20BoldTS.copyWith(
-                  color: AppColors.accent,
+    return BlocListener<PlaceOrderCubit, PlaceOrderState>(
+      listener: (context, state) {
+        if (state.placeOrderCallResult == EventCallResult.success) {
+          _showSuccessList(context, state.placeOrderResponse);
+        }
+      },
+      child: Scaffold(
+        appBar: BasicAppBar(),
+        body: Container(
+          margin: EdgeInsets.all(AppUiConst.mp16),
+          padding: EdgeInsets.all(AppUiConst.mp12),
+          decoration: BoxDecoration(color: AppColors.cardBackground),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  AppStrings.placeOrder,
+                  style: AppUiConst.font20BoldTS.copyWith(
+                    color: AppColors.accent,
+                  ),
                 ),
-              ),
-              SizedBox(height: AppUiConst.mp16),
-              BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
-                builder: (context, state) {
-                  return BlocBuilder<PairCubit, PairState>(
-                    builder: (context, pairState) {
-                      if (pairState.pairs.isEmpty) return SizedBox();
-                      return _buildLabelFormField(
-                        label: "Trading pair",
-                        formField: _buildDropDown<int>(
-                          value: state.placeOrderRequestEntity.pairId,
-                          items:
-                              pairState.pairs.map((item) {
-                                return DropdownMenuItem(
-                                  value: item.id,
-                                  child: Text(item.symbol),
-                                );
-                              }).toList(),
-                          onChanged: _placeOrderCubit.selectPairId,
-                        ),
+                SizedBox(height: AppUiConst.mp16),
+                BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                  builder: (context, state) {
+                    return BlocBuilder<PairCubit, PairState>(
+                      builder: (context, pairState) {
+                        if (pairState.pairs.isEmpty) return SizedBox();
+                        return _buildLabelFormField(
+                          label: "Trading pair",
+                          formField: _buildDropDown<int>(
+                            value: state.placeOrderRequestEntity.pairId,
+                            items:
+                                pairState.pairs.map((item) {
+                                  return DropdownMenuItem(
+                                    value: item.id,
+                                    child: Text(item.symbol),
+                                  );
+                                }).toList(),
+                            onChanged: _placeOrderCubit.selectPairId,
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
+                SizedBox(height: AppUiConst.mp12),
+                BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                  builder: (context, state) {
+                    return _buildLabelFormField(
+                      label: "Unit type",
+                      formField: _buildDropDown(
+                        value: state.placeOrderRequestEntity.unitType,
+                        items:
+                            UnitType.values.map((item) {
+                              return DropdownMenuItem(
+                                value: item.ddValue,
+                                child: Text(item.ddValue),
+                              );
+                            }).toList(),
+                        onChanged: _placeOrderCubit.selectUnitType,
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: AppUiConst.mp12),
+                BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                  builder: (context, state) {
+                    return _buildLabelFormField(
+                      label: "Side",
+                      formField: _buildDropDown(
+                        value: state.placeOrderRequestEntity.side,
+                        items:
+                            OrderSide.values.map((item) {
+                              return DropdownMenuItem(
+                                value: item.ddValue,
+                                child: Text(item.name),
+                              );
+                            }).toList(),
+                        onChanged: _placeOrderCubit.selectSide,
+                      ),
+                    );
+                  },
+                ),
+                SizedBox(height: AppUiConst.mp12),
+                _buildLabelFormField(
+                  label: "Leverage",
+                  formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                    builder: (context, state) {
+                      return _buildTextFormField(
+                        hintText: "1",
+                        initialValue:
+                            state.placeOrderRequestEntity.leverage.toString(),
+                        onChanged: _placeOrderCubit.setLeverage,
                       );
                     },
-                  );
-                },
-              ),
-              SizedBox(height: AppUiConst.mp12),
-              BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
-                builder: (context, state) {
-                  return _buildLabelFormField(
-                    label: "Unit type",
-                    formField: _buildDropDown(
-                      value: state.placeOrderRequestEntity.unitType,
-                      items:
-                          UnitType.values.map((item) {
-                            return DropdownMenuItem(
-                              value: item.ddValue,
-                              child: Text(item.ddValue),
-                            );
-                          }).toList(),
-                      onChanged: _placeOrderCubit.selectUnitType,
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: AppUiConst.mp12),
-              BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
-                builder: (context, state) {
-                  return _buildLabelFormField(
-                    label: "Side",
-                    formField: _buildDropDown(
-                      value: state.placeOrderRequestEntity.side,
-                      items:
-                          OrderSide.values.map((item) {
-                            return DropdownMenuItem(
-                              value: item.ddValue,
-                              child: Text(item.name),
-                            );
-                          }).toList(),
-                      onChanged: _placeOrderCubit.selectSide,
-                    ),
-                  );
-                },
-              ),
-              SizedBox(height: AppUiConst.mp12),
-              _buildLabelFormField(
-                label: "Leverage",
-                formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
-                  builder: (context, state) {
-                    return _buildTextFormField(
-                      hintText: "1",
-                      initialValue:
-                          state.placeOrderRequestEntity.leverage.toString(),
-                      onChanged: _placeOrderCubit.setLeverage,
-                    );
-                  },
+                  ),
                 ),
-              ),
-              SizedBox(height: AppUiConst.mp12),
-              _buildLabelFormField(
-                label: "Percent",
-                formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
-                  builder: (context, state) {
-                    return _buildTextFormField(
-                      hintText: "50",
-                      onChanged: _placeOrderCubit.selectPercent,
-                      initialValue:
-                          state.placeOrderRequestEntity.percent.toString(),
-                    );
-                  },
+                SizedBox(height: AppUiConst.mp12),
+                _buildLabelFormField(
+                  label: "Percent",
+                  formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                    builder: (context, state) {
+                      return _buildTextFormField(
+                        hintText: "50",
+                        onChanged: _placeOrderCubit.selectPercent,
+                        initialValue:
+                            state.placeOrderRequestEntity.percent.toString(),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              SizedBox(height: AppUiConst.mp12),
-              _buildLabelFormField(
-                label: "Stop loss",
-                formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
-                  builder: (context, state) {
-                    return _buildTextFormField(
-                      hintText: "0",
-                      onChanged: _placeOrderCubit.setStopLoss,
-                      initialValue:
-                          state.placeOrderRequestEntity.stopLoss?.toString(),
-                    );
-                  },
+                SizedBox(height: AppUiConst.mp12),
+                _buildLabelFormField(
+                  label: "Stop loss",
+                  formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                    builder: (context, state) {
+                      return _buildTextFormField(
+                        hintText: "0",
+                        onChanged: _placeOrderCubit.setStopLoss,
+                        initialValue:
+                            state.placeOrderRequestEntity.stopLoss?.toString(),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              SizedBox(height: AppUiConst.mp12),
-              _buildLabelFormField(
-                label: "Take profit",
-                formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
-                  builder: (context, state) {
-                    return _buildTextFormField(
-                      hintText: "0",
-                      onChanged: _placeOrderCubit.setTakeProfit,
-                      initialValue:
-                          state.placeOrderRequestEntity.takeProfit?.toString(),
-                    );
-                  },
+                SizedBox(height: AppUiConst.mp12),
+                _buildLabelFormField(
+                  label: "Take profit",
+                  formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                    builder: (context, state) {
+                      return _buildTextFormField(
+                        hintText: "0",
+                        onChanged: _placeOrderCubit.setTakeProfit,
+                        initialValue:
+                            state.placeOrderRequestEntity.takeProfit
+                                ?.toString(),
+                      );
+                    },
+                  ),
                 ),
-              ),
+                SizedBox(height: AppUiConst.mp12),
+                _buildLabelFormField(
+                  label: "Username",
+                  formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                    builder: (context, state) {
+                      return _buildTextFormField(
+                        hintText: "5212345678",
+                        onChanged: _placeOrderCubit.setUsername,
+                        initialValue:
+                            state.placeOrderRequestEntity.username?.toString(),
+                      );
+                    },
+                  ),
+                ),
+                SizedBox(height: AppUiConst.mp12),
 
-              SizedBox(height: AppUiConst.mp12),
-              _buildLabelFormField(
-                label: "Username",
-                formField: BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                BlocBuilder<PlaceOrderCubit, PlaceOrderState>(
+                  buildWhen:
+                      (p, c) =>
+                          p.placeOrderCallResult != c.placeOrderCallResult,
                   builder: (context, state) {
-                    return _buildTextFormField(
-                      hintText: "5212345678",
-                      onChanged: _placeOrderCubit.setUsername,
-                      initialValue:
-                          state.placeOrderRequestEntity.username?.toString(),
+                    if (state.placeOrderCallResult == EventCallResult.loading) {
+                      return LinearProgressIndicator();
+                    }
+                    return _buildPlaceOrderButton(
+                      onTap: _placeOrderCubit.placeOrder,
                     );
                   },
                 ),
-              ),
-              SizedBox(height: AppUiConst.mp12),
-              _buildPlaceOrderButton(onTap: _placeOrderCubit.placeOrder),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -294,6 +316,21 @@ class _PlaceOrderPageState extends State<PlaceOrderPage> {
           ),
         ),
       ),
+    );
+  }
+
+  Future _showSuccessList(
+    BuildContext context,
+    List<OrderResponseModel> placeOrderResponse,
+  ) async {
+    return await showModalBottomSheet(
+      context: context,
+      enableDrag: true,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (builder) {
+        return PlaceOrderResponseView(results: placeOrderResponse);
+      },
     );
   }
 }

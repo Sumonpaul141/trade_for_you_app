@@ -1,14 +1,15 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:trade_for_you_app/common/enums.dart';
-import 'package:trade_for_you_app/features/order/data/models/pair_model.dart';
+import 'package:trade_for_you_app/features/order/data/models/order_response_model.dart';
 import 'package:trade_for_you_app/features/order/domain/entities/place_order_request_entity.dart';
+import 'package:trade_for_you_app/features/order/domain/use_cases/place_order_use_case.dart';
 
 part 'place_order_state.dart';
 
 class PlaceOrderCubit extends Cubit<PlaceOrderState> {
-  PlaceOrderCubit() : super(PlaceOrderState());
+  final PlaceOrderUseCase _placeOrderUseCase;
+  PlaceOrderCubit(this._placeOrderUseCase) : super(PlaceOrderState());
 
   clearAll() {
     emit(state.copyWith(placeOrderRequestEntity: PlaceOrderRequestEntity()));
@@ -94,7 +95,27 @@ class PlaceOrderCubit extends Cubit<PlaceOrderState> {
     );
   }
 
-  placeOrder() {
-    debugPrint(state.placeOrderRequestEntity.toString());
+  placeOrder() async {
+    emit(state.copyWith(placeOrderCallResult: EventCallResult.loading));
+    try {
+      var res = await _placeOrderUseCase.call(
+        state.placeOrderRequestEntity.toMap(),
+      );
+      emit(
+        state.copyWith(
+          placeOrderResponse: res,
+          placeOrderCallResult: EventCallResult.success,
+        ),
+      );
+    } catch (e) {
+      emit(
+        state.copyWith(
+          placeOrderResponse: [],
+          placeOrderCallResult: EventCallResult.error,
+          error: e.toString(),
+        ),
+      );
+    }
+    emit(state.copyWith(placeOrderCallResult: EventCallResult.initial));
   }
 }
