@@ -20,6 +20,10 @@ class CancelOrderResponseView extends StatelessWidget {
     );
   }
 
+  Color _getStatusColor(bool isDone) {
+    return isDone ? Colors.green : Colors.red;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,13 +64,13 @@ class CancelOrderResponseView extends StatelessWidget {
                           children: [
                             Icon(
                               isCancelled ? Icons.check_circle : Icons.error,
-                              color: isCancelled ? Colors.green : Colors.red,
+                              color: _getStatusColor(isCancelled),
                               size: 30,
                             ),
                             const SizedBox(width: AppUiConst.mp8),
                             Text(
                               "${AppStrings.userID}: ${item.username}",
-                              style: AppUiConst.font14RegularTS.copyWith(
+                              style: AppUiConst.font12RegularTS.copyWith(
                                 color: AppColors.textPrimary,
                               ),
                             ),
@@ -84,21 +88,38 @@ class CancelOrderResponseView extends StatelessWidget {
                         ),
                       ],
                     ),
-                    if (item.errors.isNotEmpty) ...[
-                      const SizedBox(height: AppUiConst.mp8),
-                      const Text(
-                        AppStrings.errors,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
+                    if (item.errors.isNotEmpty)
+                      Container(
+                        margin: EdgeInsets.only(top: AppUiConst.mp12),
+                        padding: EdgeInsets.symmetric(
+                          vertical: AppUiConst.mp8,
+                          horizontal: AppUiConst.mp12,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(
+                            AppUiConst.borderRadius10,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Text(
+                              AppStrings.errors,
+                              style: AppUiConst.font12BoldTS.copyWith(
+                                color: _getStatusColor(false),
+                              ),
+                            ),
+                            for (var err in item.errors)
+                              Text(
+                                "- $err",
+                                style: AppUiConst.font10RegularTS.copyWith(
+                                  color: _getStatusColor(false),
+                                ),
+                              ),
+                          ],
                         ),
                       ),
-                      for (var err in item.errors)
-                        Text(
-                          "- $err",
-                          style: const TextStyle(color: Colors.red),
-                        ),
-                    ],
                   ],
                 ),
               ),
@@ -115,15 +136,14 @@ class CancelOrderResponseView extends StatelessWidget {
       children: [
         Icon(
           status ? Icons.check_circle_outline : Icons.cancel_outlined,
-          color: status ? Colors.green : Colors.red,
+          color: _getStatusColor(status),
           size: 20,
         ),
         const SizedBox(width: AppUiConst.mp4),
         Text(
           title,
-          style: TextStyle(
-            color: status ? Colors.green : Colors.red,
-            fontWeight: FontWeight.w500,
+          style: AppUiConst.font12RegularTS.copyWith(
+            color: _getStatusColor(status),
           ),
         ),
       ],

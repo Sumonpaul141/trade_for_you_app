@@ -19,6 +19,10 @@ class AppUiConst {
   static const double borderRadius30 = 10;
   static const double borderRadius40 = 10;
 
+  static TextStyle font10RegularTS = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+  );
   static TextStyle font12RegularTS = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
@@ -40,6 +44,10 @@ class AppUiConst {
     fontWeight: FontWeight.w400,
   );
 
+  static TextStyle font10BoldTS = TextStyle(
+    fontSize: 10,
+    fontWeight: FontWeight.w400,
+  );
   static TextStyle font12BoldTS = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w700,
